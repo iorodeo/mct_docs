@@ -71,18 +71,18 @@ given below.</p>
 the boot order in the BIOS so that the target computer will boot from the USB
 key or CD.</p>
 </div>
-<div class="section" id="update-sytem-software-to-latest-avialable">
-<h2>1.2. Update sytem software to latest avialable<a class="headerlink" href="#update-sytem-software-to-latest-avialable" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="update-sytem-software-to-latest-available">
+<h2>1.2. Update sytem software to latest available<a class="headerlink" href="#update-sytem-software-to-latest-available" title="Permalink to this headline">¶</a></h2>
 <p>Since Natty is an older distribution, which is past end of life, it is no
 longer getting updates. For this reason it is necessary to modify the location
 from which the package manager &#8220;apt&#8221; searches for software.  This is done by
 editing the /etc/apt/sources.list file. Note this must be as root or w/ sudo. Make
-the following changes fo rteh sources.list file:</p>
+the following changes to the sources.list file:</p>
 <blockquote>
 <div><ul class="simple">
 <li>replace all instances of <em>us.archive.ubuntu.com</em> and <em>security.ubuntu.com</em>
 with <em>old-releases.ubuntu.com</em>.</li>
-<li>comment out the the following two lines (by placing a # in front)</li>
+<li>comment out the following two lines (by placing a # in front)</li>
 </ul>
 </div></blockquote>
 <div class="highlight-none"><div class="highlight"><pre>deb http://extras.ubuntu.com/ubuntu natty main
@@ -198,7 +198,7 @@ directory.</p>
 </ul>
 </div></blockquote>
 <p>Note, at this point it is possible to test the 1396 cameras are working using a program called coriander.  First, install coriander via</p>
-<div class="highlight-none"><div class="highlight"><pre>sudo apt-get -s isntall coriander
+<div class="highlight-none"><div class="highlight"><pre>sudo apt-get -s install coriander
 </pre></div>
 </div>
 <p>You can then start coriander from the command line or GUI menu. At this point
@@ -256,7 +256,7 @@ master. See the following: <a class="reference external" href="http://wiki.ros.o
 <li>Edit tracking_2d regions.yaml and camera_pairs.yaml files. Make sure that they
 only contain the cameras that exist.  Cameras are assigned to the correct
 regions etc.</li>
-<li>cameras/calibrations  Remove all calbrations except that for current camera
+<li>cameras/calibrations  Remove all calibrations except that for current camera
 (required otherwise hangs).</li>
 <li>logging extra_video.yaml - commented this out as I don&#8217;t have a fisheye camera.</li>
 </ul>

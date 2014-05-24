@@ -28,20 +28,20 @@ Install the operating system on the desired PC. Note, you may need to change
 the boot order in the BIOS so that the target computer will boot from the USB
 key or CD. 
 
-Update sytem software to latest avialable 
+Update sytem software to latest available 
 =========================================
 
 Since Natty is an older distribution, which is past end of life, it is no
 longer getting updates. For this reason it is necessary to modify the location
 from which the package manager "apt" searches for software.  This is done by
 editing the /etc/apt/sources.list file. Note this must be as root or w/ sudo. Make
-the following changes fo rteh sources.list file:
+the following changes to the sources.list file:
 
 
  * replace all instances of *us.archive.ubuntu.com* and *security.ubuntu.com*
    with *old-releases.ubuntu.com*.
 
- * comment out the the following two lines (by placing a # in front) 
+ * comment out the following two lines (by placing a # in front) 
 
 .. code-block:: none
 
@@ -196,7 +196,7 @@ Note, at this point it is possible to test the 1396 cameras are working using a 
 
 .. code-block:: none
 
-   sudo apt-get -s isntall coriander 
+   sudo apt-get -s install coriander 
    
 You can then start coriander from the command line or GUI menu. At this point
 using coriander you should be able to start and view images from any camera
@@ -252,7 +252,7 @@ In order to run "tracking_2d" I need to:
    only contain the cameras that exist.  Cameras are assigned to the correct
    regions etc.
 
- * cameras/calibrations  Remove all calbrations except that for current camera
+ * cameras/calibrations  Remove all calibrations except that for current camera
    (required otherwise hangs).
 
  * logging extra_video.yaml - commented this out as I don't have a fisheye camera.
