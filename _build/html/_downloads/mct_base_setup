@@ -1,0 +1,24 @@
+
+# Install ROS
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu natty main" > /etc/apt/sources.list.d/ros-latest.list'
+wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install ros-electric-desktop-full
+
+# Install base software requirements
+sudo apt-get install vim mercurial git bzr openssh-server ipython
+
+# Create ROS_LOCAL directory and download mct and mct_config
+mkdir ~/ros
+
+# Download and install mct and mct_config
+cd ros
+hg clone http://bitbucket.org/iorodeo/mct
+hg clone http://bitbucket.org/iorodeo/mct_config
+cd ~/ 
+
+# Setup bash for mct
+python ~/ros/mct_config/bash_setup.py
+
+
+

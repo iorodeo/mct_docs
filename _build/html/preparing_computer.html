@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Preparing a computer &mdash; MCT 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="MCT 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Indices and tables" href="index.html" /> 
+  </head>
+  <body>
+      <div class="header"><img class="rightlogo" src="_static/iorodeo_logo.png" alt="Logo"/><h1 class="heading"><a href="index.html">
+          <span>MCT 0.1 documentation</span></a></h1>
+        <h2 class="heading"><span>1. Preparing a computer</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">Indices and tables</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="preparing-a-computer">
+<h1>1. Preparing a computer<a class="headerlink" href="#preparing-a-computer" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="download-and-install-ubuntu-natty">
+<h2>1.1. Download and install Ubuntu Natty<a class="headerlink" href="#download-and-install-ubuntu-natty" title="Permalink to this headline">¶</a></h2>
+<p>MCT currently been tested and is known to work on ubuntu Natty (11.04). A
+USB-key/CD installation image for Natty can be downloaded from ubuntu&#8217;s
+&#8216;old-releases&#8217; <a class="reference external" href="http://old-releases.ubuntu.com/releases/11.04/">http://old-releases.ubuntu.com/releases/11.04/</a>.  Download the
+appropriate &#8216;Desktop CD&#8217; image for your machine</p>
+<blockquote>
+<div><ul class="simple">
+<li>32bit <a class="reference external" href="http://old-releases.ubuntu.com/releases/11.04/ubuntu-11.04-desktop-i386.iso">PC (Intel x86) desktop CD</a></li>
+<li>64bit <a class="reference external" href="http://old-releases.ubuntu.com/releases/11.04/ubuntu-11.04-desktop-amd64.iso">64-bit PC (AMD64) desktop CD</a></li>
+</ul>
+</div></blockquote>
+<p>Next burn the install image to either a USB-key or CD. Links to instruction for doing this are
+given below.</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://www.ubuntu.com/download/desktop/create-a-usb-stick-on-windows">Create a bootable USB stick on Windows</a></li>
+<li><a class="reference external" href="http://www.ubuntu.com/download/desktop/burn-a-dvd-on-windows">Create a bootable CD on Windows</a></li>
+<li><a class="reference external" href="http://www.ubuntu.com/download/desktop/create-a-usb-stick-on-ubuntu">Create a bootable USB stick on Ubuntu</a></li>
+<li><a class="reference external" href="http://www.ubuntu.com/download/desktop/burn-a-dvd-on-ubuntu">Create a bootable CD on Ubuntu</a></li>
+</ul>
+</div></blockquote>
+<p>Install the operating system on the desired PC. Note, you may need to change
+the boot order in the BIOS so that the target computer will boot from the USB
+key or CD.</p>
+</div>
+<div class="section" id="update-sytem-software-to-latest-avialable">
+<h2>1.2. Update sytem software to latest avialable<a class="headerlink" href="#update-sytem-software-to-latest-avialable" title="Permalink to this headline">¶</a></h2>
+<p>Since Natty is an older distribution, which is past end of life, it is no
+longer getting updates. For this reason it is necessary to modify the location
+from which the package manager &#8220;apt&#8221; searches for software.  This is done by
+editing the /etc/apt/sources.list file. Note this must be as root or w/ sudo. Make
+the following changes fo rteh sources.list file:</p>
+<blockquote>
+<div><ul class="simple">
+<li>replace all instances of <em>us.archive.ubuntu.com</em> and <em>security.ubuntu.com</em>
+with <em>old-releases.ubuntu.com</em>.</li>
+<li>comment out the the following two lines (by placing a # in front)</li>
+</ul>
+</div></blockquote>
+<div class="highlight-none"><div class="highlight"><pre>deb http://extras.ubuntu.com/ubuntu natty main
+deb-src htt://extras.ubuntu/ubuntu natty main
+</pre></div>
+</div>
+<p>After making the changes run the following to commands to upgrade the software.</p>
+<div class="highlight-none"><div class="highlight"><pre>sudo apt-get update
+sudo apt-get upgrade
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-the-base-software">
+<h2>1.3. Install the base software<a class="headerlink" href="#install-the-base-software" title="Permalink to this headline">¶</a></h2>
+<p>The following script can be run to install the base software required for the
+system. .</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># Install ROS</span>
+sudo sh -c <span class="s1">&#39;echo &quot;deb http://packages.ros.org/ros/ubuntu natty main&quot; &gt; /etc/apt/sources.list.d/ros-latest.list&#39;</span>
+wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install ros-electric-desktop-full
+
+<span class="c"># Install base software requirements</span>
+sudo apt-get install vim mercurial git bzr openssh-server ipython
+
+<span class="c"># Create ROS_LOCAL directory and download mct and mct_config</span>
+mkdir ~/ros
+
+<span class="c"># Download and install mct and mct_config</span>
+<span class="nb">cd </span>ros
+hg clone http://bitbucket.org/iorodeo/mct
+hg clone http://bitbucket.org/iorodeo/mct_config
+<span class="nb">cd</span> ~/
+
+<span class="c"># Setup bash for mct</span>
+python ~/ros/mct_config/bash_setup.py
+</pre></div>
+</div>
+<p>Download this script from <a class="reference download internal" href="_downloads/mct_base_setup"><tt class="xref download docutils literal"><span class="pre">here</span></tt></a>.  Make it executable using</p>
+<div class="highlight-none"><div class="highlight"><pre>chmod u+x mct_base_setup
+</pre></div>
+</div>
+<p>and run the script as shown below</p>
+<div class="highlight-none"><div class="highlight"><pre>./mct_base_setup
+</pre></div>
+</div>
+<p>Note, during the installation there maybe several prompts - answer yes to all question.</p>
+<p>This will install ROS and seveal other packages required to install the
+remaining dependencies using <em>rosdep</em>. It will also make some required changes to the
+system&#8217;s environment variables.   When the script is finished close the current
+shell and open a new before proceeding with the install.</p>
+<p>Note, you can test ROS by running</p>
+<div class="highlight-none"><div class="highlight"><pre>roscore
+</pre></div>
+</div>
+<p>Should work without errors, use ctl-c to exit.</p>
+<div class="section" id="issues">
+<h3>1.3.1. Issues:<a class="headerlink" href="#issues" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>I had to edit mct_config/bash/mct_setup.bash to remove references to
+&#8220;albert&#8221; and replace with &#8220;wbd&#8221;. We will probably want this to be
+automatic. May want to modify bash_setup.py so that this replacement
+occurs automatically - or replace with $HOME ... not sure which is best.</li>
+<li>had to edit mct_config/bash/mct_setup.bash to change ROS_MASTER_URI definition.</li>
+<li>pydc1394 didn&#8217;t install correctly. It downloaded, but python setup.py stuff didn&#8217;t run.
+Needed to do this manually. Happened both machines.</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="install-mct-s-dependencies-using-rosdep">
+<h2>1.4. Install MCT&#8217;s dependencies using rosdep<a class="headerlink" href="#install-mct-s-dependencies-using-rosdep" title="Permalink to this headline">¶</a></h2>
+<p>Update the list of ROS packages with the following command</p>
+<div class="highlight-none"><div class="highlight"><pre>rospack profile
+</pre></div>
+</div>
+<p>This will display a list of the packages that are visible to ROS.  Make sure that</p>
+<div class="highlight-none"><div class="highlight"><pre>/home/&lt;username/ros
+/home/&lt;username&gt;/ros/mct
+</pre></div>
+</div>
+<p>are on the list.</p>
+<p>Install MCT&#8217;s dependencies using rosdep with the following command</p>
+<div class="highlight-none"><div class="highlight"><pre>rosdep install mct
+</pre></div>
+</div>
+<p>Again durning the installation process there will be occasional prompts - answer yes to all.</p>
+</div>
+<div class="section" id="build-the-mct-ros-package">
+<h2>1.5. Build the MCT ROS package<a class="headerlink" href="#build-the-mct-ros-package" title="Permalink to this headline">¶</a></h2>
+<p>First, cd into mct directory ~/ros/mct.   Then run</p>
+<div class="highlight-none"><div class="highlight"><pre>rosmake
+</pre></div>
+</div>
+<p>Build will take awhile. After the build has finished run the install_scripts.py python program found in the ~/ros/mct
+directory.</p>
+<div class="highlight-none"><div class="highlight"><pre>python ~/ros/mct/install_scripts.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="set-device-permissions">
+<h2>1.6. Set device permissions<a class="headerlink" href="#set-device-permissions" title="Permalink to this headline">¶</a></h2>
+<p>In order to run MCT the user must have permissions to access the cameras and various serial devices.</p>
+<div class="section" id="setup-permisions-for-1394-cameras">
+<h3>1.6.1. Setup permisions for 1394 cameras<a class="headerlink" href="#setup-permisions-for-1394-cameras" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Add user to video group.  Edit (root or sudo) /etc/group and put &lt;username&gt; after &#8220;video&#8221; item - e.g. video:x:44:&lt;username&gt;.</li>
+<li>Copy udev rules to appropriate location.  &#8220;sudo cp ~/ros/mct/mct_computer_admin/99-camera1394.rules /etc/udev/rules.d&#8221;</li>
+<li>logout and back in again for group changes to take effect.</li>
+<li>force system to reload udev rules. &#8220;sudo udevadm control &#8211;reload-rules&#8221;</li>
+</ul>
+</div></blockquote>
+<p>Note, at this point it is possible to test the 1396 cameras are working using a program called coriander.  First, install coriander via</p>
+<div class="highlight-none"><div class="highlight"><pre>sudo apt-get -s isntall coriander
+</pre></div>
+</div>
+<p>You can then start coriander from the command line or GUI menu. At this point
+using coriander you should be able to start and view images from any camera
+attached to the system.</p>
+</div>
+<div class="section" id="setup-permissions-for-serial-devices">
+<h3>1.6.2. Setup permissions for serial devices<a class="headerlink" href="#setup-permissions-for-serial-devices" title="Permalink to this headline">¶</a></h3>
+<p>Serial deviced include the - camera_trigger, active_target, pulse-skipper, mightex-serial devices, etc.</p>
+<blockquote>
+<div><ul class="simple">
+<li>A template udev file &#8220;99-mct-usb-serial.rules&#8221; can be found in the ~/ros/mct/mct_computer_admin/misc directory.</li>
+<li>This file needs to be edited so that the serial numbers of the devices match those for the specific system. (Add notes for figuring out the serial numbers</li>
+</ul>
+<blockquote>
+<div>of the devices).</div></blockquote>
+<ul class="simple">
+<li>After finishing force a reload of the udev rules &#8220;sudo udevadm control &#8211;reload-rules&#8221;</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="generate-ssh-keys">
+<h3>1.6.3. Generate ssh keys<a class="headerlink" href="#generate-ssh-keys" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>cd into ~/.ssh directory.</li>
+<li>Create keys with &#8220;ssh-keygen -t rsa -C &lt;<a class="reference external" href="mailto:your&#37;&#52;&#48;email&#46;com">your<span>&#64;</span>email<span>&#46;</span>com</a>&#8221;.</li>
+<li>Add to authorized_keys file w/ &#8220;cat id_rsa.pub &gt;&gt; authorized_keys&#8221;</li>
+<li>Add master&#8217;s public key (id_rsa.pub) to each slave&#8217;s &#8220;authorized_keys&#8221; file.</li>
+<li>Add slaves&#8217;s public keys to master&#8217;s authorized_keys file.</li>
+</ul>
+</div></blockquote>
+<p>Note, need to ssh (just once) from the master to each slave. Need to do this
+with the following command to ensure that the ecdsa algorithm is not used.</p>
+<div class="highlight-none"><div class="highlight"><pre>ssh -oHostKeyAlgorithms=&#39;ssh-rsa&#39; &lt;hostname&gt;
+</pre></div>
+</div>
+<p>Note, master need to knows slaves by name - so need some kind of DNS or add
+slaves to /etc/hosts file.  Also, network setup should be such that for each
+slave you can &#8216;ping&#8217; the master from the slave and &#8216;ping&#8217; the slave from the
+master. See the following: <a class="reference external" href="http://wiki.ros.org/ROS/NetworkSetup">http://wiki.ros.org/ROS/NetworkSetup</a></p>
+</div>
+<div class="section" id="other-notes">
+<h3>1.6.4. Other Notes<a class="headerlink" href="#other-notes" title="Permalink to this headline">¶</a></h3>
+<p>In order to run &#8220;camera_assignment&#8221; and &#8220;help&#8221; I needed to:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Edit machine_def.yaml file to reflect current computer setup. Run &#8220;mct update_machine_def&#8221;.</li>
+<li>At this point should be able to run &#8220;mct help&#8221;, &#8220;mct camera_assignment&#8221;.</li>
+</ul>
+</div></blockquote>
+<p>In order to run &#8220;tracking_2d&#8221; I need to:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Edit tracking_2d regions.yaml and camera_pairs.yaml files. Make sure that they
+only contain the cameras that exist.  Cameras are assigned to the correct
+regions etc.</li>
+<li>cameras/calibrations  Remove all calbrations except that for current camera
+(required otherwise hangs).</li>
+<li>logging extra_video.yaml - commented this out as I don&#8217;t have a fisheye camera.</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">Indices and tables</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Will Dickson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

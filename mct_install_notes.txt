@@ -1,0 +1,248 @@
+MCT installation notes
+
+
+# New 
+# ---------------------------------------------------------------------------------------
+#
+
+1. Preparing a computer.
+
+  1.1 Install ubuntu Natty from 'old-releases' http://old-releases.ubuntu.com/releases/11.04/
+
+  1.2 Update the software on the system to the lastest version available for this older 
+      distribution as follows: 
+
+      * Modify /etc/apt/sources.list.  to be done as root .. i.e. w/sudo)
+
+        - replace all instances of "us.archive.ubuntu.com" and "security.ubuntu.com" with
+        "old-releases.ubuntu.com".
+
+        - comment out the the following two lines (by placing a # in front):
+          deb http://extras.ubuntu.com/ubuntu natty main
+          deb-src htt://extras.ubuntu/ubuntu natty main
+
+      * Run "sudo apt-get update" followed by "sudo apt-get upgrade"
+
+
+  1.2 Install base software via mct_base_setup script. Note, there are some prompts so you
+      should ckeck on it occasionally.  
+
+    1.2.1 (Part of script) Install ros electric
+    1.2.2 (Part of script) Install required software packages
+    1.2.3 (Part of script) Create local ros directory ROS_LOCAL (e.g. /home/<username>/ros )
+    1.2.4 (Part of sciprt) Use mercurial to download mct and mct_config (perhaps a starter or sample config)
+    1.2.5  Run ROS_LOCAL/mct_config/bash_setup.py
+    1.2.6. close shell for changes to take effect.
+
+    Issues: 
+    
+    * had to edit mct_config/bash/mct_setup.bash to remove references to
+      "albert" and replace with "wbd". We will probalby want this to be
+      automatic. May want to modify bash_setup.py so that this replacement
+      occurs automatically - or replace with $HOME ... not sure which is best.
+
+    * had to edit mct_config/bash/mct_setup.bash to change ROS_MASTER_URI definition. 
+
+    * pydc1394 didn't install correctly. It downloaded, but python setup.py stuff didn't run.
+
+
+  1.3 Test ros by running "roscore". Should work without errors, use ctl-c to
+      exit. Note, get warnging from machine definition file.
+
+  1.4 Run "rospack profile"  to update list of ros packages. Make sure that 
+     /home/<username/ros and /home/<username>/ros/mct are on the list.
+
+  1.5 Run "rosdep install mct" to start bootstrap process. Again there are
+  occasional prompts.
+
+  1.6. Build the mct package. First, cd into mct directory via "roscd mct"  or just
+  "cd ~/ros/mct".   The run "rosmake".  Build will take awhile.
+
+  1.7 Run install_scripts.py from the ~/ros/mct directory. 
+      "python ~/ros/mct/install_scripts.py"
+
+  1.8 Setup permisions for 1394 cameras if any cameras will be used with this computer.  
+      
+      * Add user to video group.  Edit (as root) /etc/group and put <username> after
+        "video" item - e.g. video:x:44:<username>.
+
+      * Copy udev rules to appropriate location.
+      "sudo cp ~/ros/mct/mct_computer_admin/99-camera1394.rules /etc/udev/rules.d"
+
+      * logout and back in again for group changes to take effect.
+
+      * force system to reload udev rules. "sudo udevadm control --reload-rules"
+
+      Note, could test cameras at this point w/ coriander. 
+      First, install it via "sudo apt-get -s isntall coriander"
+      Then run using command "coriander".
+
+  1.9 Setup permissions for serial devices - camera_trigger, active_target, pulse-skipper, 
+      mightex-serial devices, etc. A template udev file "99-mct-usb-serial.rules" can 
+      be found in the ~/ros/mct/mct_computer_admin/misc directory.  This file
+      needs to be edited so that the serial numbers of the devices match those
+      for the specific system. (Add notes for figuring out the serial numbers
+      of the devices).
+
+      * After finishing force a reload of the udev rules "sudo udevadm control --reload-rules"
+
+  1.10 Edit machine_def.yaml file to reflect current computer setup. Run "mct update_machine_def".
+
+  1.11 Should be able to run "mct help", "mct camera_assignment".
+
+  
+  1.12 Generate ssh keys.  
+       
+    * cd into ~/.ssh directory. 
+    * Create keys with "ssh-keygen -t rsa -C <your@email.com".
+    * Add to authorized_keys file w/ "cat id_rsa.pub >> authorized_keys"
+    * Curretly just doing this for single computer set up but later ... 
+    * (Later) Add master's public key (id_rsa.pub) to each slav's "authorized_keys"
+    * (Later) Add slaves's public keys to master's authorized_keys.
+
+  Note, need to ssh (just once) from the master to each slave. Need to do this
+  with the following command to ensure that the ecdsa algorithm is not used.
+  ssh -oHostKeyAlgorithms='ssh-rsa' <hostname>
+
+  Note, master need to knows slaves by name - so need some kind of DNS or add
+  slaves to /etc/hosts file.  Also, network setup should be such that for each
+  slave you can 'ping' the master from the slave and 'ping' the slave from the
+  master. See the following: http://wiki.ros.org/ROS/NetworkSetup
+  
+
+  Notes, in order to run "tracking_2d" I needed to edit 
+
+  * tracking_2d regions.yaml and camera_pairs.yaml files. Make sure that they
+    only contain the cameras that exist.  Cameras are assigned to the correct
+    regions etc.
+
+  * cameras/calibrations  Remove all calbrations except that for current camera
+    (required otherwise hangs).
+
+  * logging extra_video.yaml - commented this out as I don't have a fisheye camera.
+  
+  
+ 
+
+
+
+Other tasks
+-----------
+
+If you use vim and vim tools install .vimrc and .vim directory with your prefered files..
+
+
+
+Modifications
+-------------
+
+* Added lauch directory w/ launch file to mct_rand_sync for launching rand_sync_node.  
+
+* Created mct_config/rand_sync sub-directory  w/ rand_sync.yaml file with rand sync device's 
+  configuration parameters.
+
+* Modified 99-mct-usb-serial.rules  Added entry for rand sync device.
+
+
+
+
+
+
+
+# Old
+# ---------------------------------------------------------------------------------------
+#
+
+# Basic install
+# -----------------------------------------------------------------------------------
+
+0. Install ubuntu (oneric or precise?)  Definitely precise
+1. Run mct_base_install (where do they get this file? - from website?)
+#1.1 Need to run "sudo rosdep init" and "rosdep update"
+2. Create local ros directory ROS_LOCAL (e.g. /home/wbd/work/ros or  /home/albert/ros)
+3. Use mercurial to download mct and mct_config (perhaps a starter or sample config)
+4. Run ROS_LOCAL/mct_config/bash_setup.py
+5. Run "rosdep install mct" to install mct's dependencies. 
+6. In ROS_LOCAL/mct directory run rosmake
+7. Install mct scripts via "python install_scripts.py" from ROS_LOCAL/mct directory
+
+# Configuration
+# ---------------------------------------------------------------------------------------
+
+0. Edit machine definition in mct_config/machine/machine_def.yaml. Run "mct update_machine_def" 
+   to create a new mct.machine file.
+
+1. Install udev camera rules. Currently ~/work/ros/mct_computer_admin/misc. Run
+   "sudo udevadm control --reload-rules". Add user (yourself) to video group in /etc/group
+   in order to have camera access. Need to log out for change to take effect.
+
+
+
+# Notes
+# ----------------------------------------------------------------------------------------
+Tried to run "mct camera_assignemt" fails because camera trigger device does
+not exist. /dev/camera_trigger is missing. 
+
+Need to create fake camera_trigger device - as I don't currently have one.  
+
+Note, might want to move the udev stuff to the mct_config repo as there is alot
+of device specific stuff in this directory. 
+
+
+Fix.
+Created Arduino based camera trigger device. Tested and it works fine at least
+with camera assignment.
+
+###
+Had some issues with 'old' end of life Ubuntu Oneiric and ROS electric. Moved
+to Ubuntu precise, which is a long term release, and ROS fuerte.  Ran into
+several incompatiblities.
+
+  1.) rosdep has changed now used /etc/ros/rosdep/sources.list.d file to
+  track dependencies. 
+
+  2.) deferences with machine file - e.g. removed of <env> tags.
+
+
+###
+Created 90-mct.list which adds back in stack level rosdep.yaml dependency for
+mct.
+
+Issue and fix.: 
+
+* rosdep no longer supports bash scripts in rosdep yaml. Moved these to
+external install script "install_ext_src".   Create rosdep.yaml.electric and
+rosdep.yaml.fuerte.  Where fuerte all scripts installs are replaced by dummy
+installs - at least temporarily while we need both fuerte and electric
+support.
+
+At this point "rosdep install mct" works in fuerte. Note need to run "rosdep
+update" first - which was not the case in fuerte. 
+
+###
+Tried running "mct cammera_assignment"  and ran into machine file difference
+issue.
+
+modified machine file so that has env-loader shell script.
+
+Issue upgrade to precise removed camera udev rules - add again.
+
+Camera now works. Seem to have issue with mjpeg server. Snapshot works but
+streaming fails.
+
+Notes say to please uninstall ros-fuerte-brown-remotelab before installing
+Before installing remote_lab stack in fuerte.   May need rosbridge ....??? 
+
+
+Stopped here.
+
+
+
+
+
+
+
+
+
+
+
