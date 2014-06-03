@@ -3,8 +3,6 @@ Preparing a computer
 **************************
 
 
-
-
 Download and install Ubuntu Natty 
 ==================================
 

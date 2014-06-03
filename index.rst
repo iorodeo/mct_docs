@@ -9,7 +9,9 @@ Contents:
    :maxdepth: 2
    :numbered:
 
+   
    preparing_computer
+   command_line_usage
 
 
 Indices and tables
