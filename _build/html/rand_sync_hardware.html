@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3. Random Synchronization Signal &mdash; MCT 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="MCT 0.1 documentation" href="index.html" />
+    <link rel="prev" title="2. The mct command line utility" href="command_line_usage.html" /> 
+  </head>
+  <body>
+      <div class="header"><a href="http://www.iorodeo.com"  target="_blank">
+  <img class="rightlogo" src="_static/iorodeo_logo.png" alt="Logo"/>
+  </a><h1 class="heading"><a href="index.html">
+  <span>MCT 0.1 documentation</span></a></h1>
+<h2 class="heading"><span>3. Random Synchronization Signal</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="command_line_usage.html">2. The mct command line utility</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="random-synchronization-signal">
+<h1>3. Random Synchronization Signal<a class="headerlink" href="#random-synchronization-signal" title="Permalink to this headline">¶</a></h1>
+<p>The purpose of the random synchronization hardware is to provide a random 3-bit
+signal which be used to verify the synchronization between the camera tracking
+and Neuralynx data. If a misalignment is discovered the random synchronization
+signal can be used to help determine where the misalignment has occurred and to
+help re-align the data.</p>
+<div class="section" id="hardware-description">
+<h2>3.1. Hardware Description<a class="headerlink" href="#hardware-description" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center">
+<img alt="_images/rand_sync_device_figure.png" src="_images/rand_sync_device_figure.png" />
+</div>
+<p>The random synchronization hardware is designed as shield for the  <a class="reference external" href="http://arduino.cc/en/Main/ArduinoBoardNano">Arduino
+Nano.</a></p>
+<p>The firmware on the Arduino generates a random 3-bit synchronization signal
+which changes value once a second. The random synchronization bits are
+output on pins 5,7 and 9 of the Digital IO header. A change signal, which
+toggles every time the synchronization signal changes, is output on pin 4. IN</p>
+<p>In addition there is an input the camera hardware trigger signal which triggers
+an interrupt service routine in the firmware.  During the interrupt the
+firmware counts camera trigger and records the state of the random
+synchronization signal. The values are stored on a ring buffer which can be
+queried from the host PC over USB.</p>
+<p>For each camera frame the MCT software will query the random synchronization
+device in order to get the associated 3-bit signal so that it can be recorded
+along with the tracking data.</p>
+<p>Additional information:</p>
+<ul class="simple">
+<li><a class="reference download internal" href="_downloads/rand_sync_device_schem.pdf"><tt class="xref download docutils literal"><span class="pre">Schematic</span></tt></a> and <a class="reference download internal" href="_downloads/rand_sync_device_layout.png"><tt class="xref download docutils literal"><span class="pre">layout</span></tt></a></li>
+<li>Design files and BOM (KiCad) <a class="reference external" href="https://bitbucket.org/iorodeo/mct_rand_sync_pcb/src">https://bitbucket.org/iorodeo/mct_rand_sync_pcb/src</a></li>
+<li>Device firmware <a class="reference external" href="https://bitbucket.org/iorodeo/mct/src/">https://bitbucket.org/iorodeo/mct/src/</a>  (subdirectory: mct_rand_sync/firmware/rand_sync)</li>
+</ul>
+</div>
+<div class="section" id="installation-upgrade">
+<h2>3.2. Installation/Upgrade<a class="headerlink" href="#installation-upgrade" title="Permalink to this headline">¶</a></h2>
+<p>The initial MCT system did not include the random synchronization hardware. The
+following set of notes describes how to install/upgrade the MCT system so that
+it can make use of this hardware.</p>
+<p>Overview of installation steps:</p>
+<ul class="simple">
+<li>Update the mct software and the mct_config on both the master and slave computers.</li>
+<li>Add the random synchronization device to the udev rules file.</li>
+<li>Install the hardware.</li>
+<li>Test the installation.</li>
+</ul>
+</div>
+<div class="section" id="usb-communications">
+<h2>3.3. USB Communications<a class="headerlink" href="#usb-communications" title="Permalink to this headline">¶</a></h2>
+<p>Description of the USB communication used between the device and the host computer.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="command_line_usage.html">2. The mct command line utility</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Will Dickson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
