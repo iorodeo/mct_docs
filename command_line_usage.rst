@@ -28,7 +28,7 @@ Help
     Prints a comprehensive list of the commands available along with the brier
     description of each.
 
-GBasic administration
+Basic administration
 ====================
 
 **wakeup** 

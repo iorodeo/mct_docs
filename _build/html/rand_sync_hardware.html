@@ -62,12 +62,13 @@ Nano.</a></p>
 <p>The firmware on the Arduino generates a random 3-bit synchronization signal
 which changes value once a second. The random synchronization bits are
 output on pins 5,7 and 9 of the Digital IO header. A change signal, which
-toggles every time the synchronization signal changes, is output on pin 4. IN</p>
-<p>In addition there is an input the camera hardware trigger signal which triggers
-an interrupt service routine in the firmware.  During the interrupt the
-firmware counts camera trigger and records the state of the random
-synchronization signal. The values are stored on a ring buffer which can be
-queried from the host PC over USB.</p>
+toggles every time the synchronization signal changes, is output on pin 4.</p>
+<p>A BNC input is provided for the camera trigger signal. A camera trigger on this
+input will initiate an interrupt service routine in the firmware.  The
+interrupt routine counts the camera trigger, records the state of the random
+synchronization signal and save the values in a ring buffer. The MCT master can
+then query the random synchronization device, over USB, in order to get the random
+synchronization signal associate with a given camera trigger.</p>
 <p>For each camera frame the MCT software will query the random synchronization
 device in order to get the associated 3-bit signal so that it can be recorded
 along with the tracking data.</p>
@@ -80,16 +81,150 @@ along with the tracking data.</p>
 </div>
 <div class="section" id="installation-upgrade">
 <h2>3.2. Installation/Upgrade<a class="headerlink" href="#installation-upgrade" title="Permalink to this headline">¶</a></h2>
-<p>The initial MCT system did not include the random synchronization hardware. The
-following set of notes describes how to install/upgrade the MCT system so that
-it can make use of this hardware.</p>
+<p>Note, the initial MCT system did not include the random synchronization
+hardware. In order to make use of this this system the MCT software and
+configuration needs to be upgraded and the random synchronization hardware
+needs to be installed.</p>
 <p>Overview of installation steps:</p>
-<ul class="simple">
-<li>Update the mct software and the mct_config on both the master and slave computers.</li>
-<li>Add the random synchronization device to the udev rules file.</li>
+<ol class="arabic simple">
+<li>Update MCT software and configuration.</li>
 <li>Install the hardware.</li>
 <li>Test the installation.</li>
+</ol>
+<div class="section" id="updating-the-mct-software-and-configuration-files">
+<h3>3.2.1. Updating the MCT software and configuration files.<a class="headerlink" href="#updating-the-mct-software-and-configuration-files" title="Permalink to this headline">¶</a></h3>
+<p>Using the random synchronization devices requires upgrades to both the MCT
+software and the MCT configuration files.</p>
+<p>The MCT software needs to be upgraded as new ROS package is required for
+communicating with the random synchronization hardware. In addition modified
+versions of serveral existing MCT ROS packages - such as mct_logging and
+mct_web_apps - are required in order to properly add the synchronization
+signals to the MCT tracking data.</p>
+<p>The MCT configuration files need to be modified as an new rand_sync section
+(directory) has been added to the configuration in order to store the required
+parameters for communicating with this new hardware.</p>
+<p>In what follows it is assumed that the master and slave computers are all
+running.</p>
+<p>The first step is to pull the latest versions of the MCT software and MCT
+configuration repositories. Two cases are considered: first where the MCT
+master has internet access second where it does not.</p>
+<div class="section" id="pulling-latest-version-with-internet-access">
+<h4>3.2.1.1. Pulling latest version with internet access<a class="headerlink" href="#pulling-latest-version-with-internet-access" title="Permalink to this headline">¶</a></h4>
+<p>On the MCT master computer the following command should be run twice - once
+from within the local copy of the  MCT source repository (e.g.  ~/ros/mct) and
+a second time from within the local copy of the MCT configuration repository
+(e.g. ~/ros/mct_config).</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># Pull and update mercurial repository</span>
+hg pull -u
+</pre></div>
+</div>
+<p>This will update the local copes of the MCT software and configuration to the
+latest version.</p>
+</div>
+<div class="section" id="pulling-latest-version-without-internet-access">
+<h4>3.2.1.2. Pulling latest version without internet access<a class="headerlink" href="#pulling-latest-version-without-internet-access" title="Permalink to this headline">¶</a></h4>
+<p>If the MCT master does not have internet access copies of the latest versions
+of the MCT software and configuration repositories will need to be downloaded
+onto a thumb drive (or similar) on a computer with does.</p>
+<p>Copies (.zip archives) of the latest versions of the repositories can be
+downloaded from here</p>
+<ul class="simple">
+<li>MCT software <a class="reference external" href="https://bitbucket.org/iorodeo/mct/downloads">https://bitbucket.org/iorodeo/mct/downloads</a></li>
+<li>MCT configuration <a class="reference external" href="https://bitbucket.org/iorodeo/mct_config/downloads">https://bitbucket.org/iorodeo/mct_config/downloads</a></li>
 </ul>
+<p>Unzip the downloaded archives and place them on a thumbdrive. Then copy them
+to a temporary directory on the MCT master computer (e.g. ~/temp).</p>
+<p>On the MCT master computer the following command should be run twice - once
+from within MCT source repository (e.g.  ~/ros/mct) and a second time from
+within the local copy of the MCT configuration repository (e.g.
+~/ros/mct_config).</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># Pull and update mercurial repository</span>
+hg pull -u &lt;path to downloaded repository&gt;
+</pre></div>
+</div>
+<p>In the above command the &lt;path to downloaded repository&gt; should be replaced by
+the path to repositories in the temporary directory downloaded in the previous
+step. For example, if the repository for the MCT was downloaded to a directory
+named iorodeo-mct-999b0e854397 in the ~/temp directory, the you would run the
+command</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># Pull and update mercurial repository</span>
+hg pull -u ~/temp/iorodeo-mct-999b0e854397
+</pre></div>
+</div>
+<p>from within the ~/ros/mct directory.</p>
+</div>
+<div class="section" id="building-the-ros-packages-on-master-computer">
+<h4>3.2.1.3. Building the ROS packages on master computer.<a class="headerlink" href="#building-the-ros-packages-on-master-computer" title="Permalink to this headline">¶</a></h4>
+<p>The next step is to build the ROS packages on the MCT master computer.
+On the MCT master computer, from within the mct source repository (~/mct/ros),
+run the following command.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># Build the ROS packages on the mct master</span>
+rosmake
+</pre></div>
+</div>
+</div>
+<div class="section" id="updating-the-slave-computers">
+<h4>3.2.1.4. Updating the slave computers<a class="headerlink" href="#updating-the-slave-computers" title="Permalink to this headline">¶</a></h4>
+<p>From the MCT master run the following commands (from any directory - doesn&#8217;t matter).</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># Update the setup on the slave computers</span>
+mct push_setup
+
+<span class="c"># Update the mct repositories on each of the slaves.</span>
+mct pull_from_master
+
+<span class="c"># Build the ROS packages on the mct slaves</span>
+mct rosmake
+</pre></div>
+</div>
+<p>The MCT software and configuration files should now be up to date.</p>
+</div>
+<div class="section" id="updating-udev-rules">
+<h4>3.2.1.5. Updating udev rules<a class="headerlink" href="#updating-udev-rules" title="Permalink to this headline">¶</a></h4>
+<p>In order for the MCT software to find the random synchronization USB device it
+is necessary to add some  udev rules to the system. A new template udev rules
+file (99-mct-usb-serial.rules) can be found in the mct/mct_computer_admin/misc
+directory. The contents of this file are as follows:</p>
+<div class="highlight-none"><div class="highlight"><pre>SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;0403&quot;, ATTRS{idProduct}==&quot;6001&quot;, ATTRS{product}==&quot;FT232R USB UART&quot;, ATTRS{serial}==&quot;A8007Ryg&quot;, SYMLINK+=&quot;camera-trigger&quot;
+SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;0403&quot;, ATTRS{idProduct}==&quot;6001&quot;, ATTRS{product}==&quot;FT232R USB UART&quot;, ATTRS{serial}==&quot;A7006RxL&quot;, SYMLINK+=&quot;active-target&quot;
+SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;0403&quot;, ATTRS{idProduct}==&quot;6001&quot;, ATTRS{product}==&quot;ARDUINO NANO&quot;, ATTRS{serial}==&quot;11IP1984&quot;, SYMLINK+=&quot;pulse-skipper&quot;
+SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;067b&quot;, ATTRS{idProduct}==&quot;2303&quot;, ATTRS{product}==&quot;USB-Serial Controller D&quot;, SYMLINK+=&quot;mightex-serial-0&quot;
+SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;067b&quot;, ATTRS{idProduct}==&quot;2303&quot;, ATTRS{product}==&quot;USB-Serial Controller&quot;, SYMLINK+=&quot;mightex-serial-1&quot;
+SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;0403&quot;, ATTRS{idProduct}==&quot;6001&quot;, ATTRS{product}==&quot;FT232R USB UART&quot;, ATTRS{serial}==&quot;A600feL8&quot;, SYMLINK+=&quot;mightex-serial-2&quot;
+SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;0403&quot;, ATTRS{idProduct}==&quot;6001&quot;, ATTRS{product}==&quot;FT232R USB UART&quot;, ATTRS{serial}==&quot;A600feL9&quot;, SYMLINK+=&quot;mightex-serial-3&quot;
+SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;0403&quot;, ATTRS{idProduct}==&quot;6001&quot;, ATTRS{product}==&quot;FT232R USB UART&quot;, ATTRS{serial}==&quot;A600feLa&quot;, SYMLINK+=&quot;mightex-serial-4&quot;
+SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;0403&quot;, ATTRS{idProduct}==&quot;6001&quot;, ATTRS{product}==&quot;FT232R USB UART&quot;, ATTRS{serial}==&quot;A600feLb&quot;, SYMLINK+=&quot;mightex-serial-5&quot;
+SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;0403&quot;, ATTRS{idProduct}==&quot;6001&quot;, ATTRS{product}==&quot;ARDUINO NANO&quot;, ATTRS{serial}==&quot;12DP0619&quot;, SYMLINK+=&quot;rand-sync&quot;
+</pre></div>
+</div>
+<p>The last line of this file creates a symbolic link (rand-sync) for the random
+synchronization device. This symbolic link is required in order for the MCT
+software to find the random synchronization hardware. Two attributes (ATTRS)
+on this line may need to be modified in order to match your exact hardware -
+&#8220;product&#8221; and &#8220;serial&#8221;.</p>
+<p>Depending on the version of the Arduino Nano used on your random
+synchronization device the product attribute will either be &#8220;ARDUINO NANO&#8221; or
+&#8220;FT232 USB UART&#8221;. The serial attribute will be specific to the exact Arduino
+Nano - it is basically a unique serial number identifying the  device.</p>
+<p>By default, when the Arduino Nano on the random synchronization device is
+plugged into the MCT master computer via USB it will show up as a device in the
+&#8220;/dev&#8221; directory with a name of the form &#8220;/dev/ttyUSBn&#8221;  where &#8220;n&#8221; depends on
+the what other devices are connected to the computer. By running  the following
+command before and after connecting the USB cable to the Arduino Nano you can
+determine the name assigned to your device.</p>
+<div class="highlight-bash"><div class="highlight"><pre>ls /dev/ttyUSB*
+</pre></div>
+</div>
+<p>When the device is connected a new entry of the form &#8220;/dev/ttyUSBn&#8221; should
+appear  - this is temporary name automatically assigned to the device. You can
+use this name to determine the product and serial attributes for the devicej by
+running the following command.</p>
+<div class="highlight-bash"><div class="highlight"><pre>udevadm info -a -p <span class="k">$(</span>udevadm info -q path -n /dev/ttyUSBn<span class="k">)</span>
+</pre></div>
+</div>
+<p>Note, in the above command the &#8220;n&#8221; should be replace by the number assigned to
+your device. The output of this command will return something like the following:</p>
+</div>
+</div>
 </div>
 <div class="section" id="usb-communications">
 <h2>3.3. USB Communications<a class="headerlink" href="#usb-communications" title="Permalink to this headline">¶</a></h2>
