@@ -225,7 +225,27 @@ running the following command.
 
 
 Note, in the above command the "n" should be replace by the number assigned to
-your device. The output of this command will return something like the following:
+your device. The output of this command will return something like the following
+:download:`udevadm_info_example <_static/udevadm_info_example.txt>`. Look for 
+product and serial attributes for the Arduino Nano  - something line either this
+
+
+.. code-block:: none 
+
+    ATTRS{manufacturer}=="FTDI"
+    ATTRS{product}=="FT232R USB UART"
+    ATTRS{serial}=="11CP0195"
+
+
+of this
+
+.. code-block:: none 
+
+    ATTRS{manufacturer}=="FTDI"
+    ATTRS{product}=="ARDUINO NANO"
+    ATTRS{serial}=="11CP0195"
+
+Next ...
 
 
 USB Communications

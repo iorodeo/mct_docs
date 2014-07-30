@@ -222,7 +222,21 @@ running the following command.</p>
 </pre></div>
 </div>
 <p>Note, in the above command the &#8220;n&#8221; should be replace by the number assigned to
-your device. The output of this command will return something like the following:</p>
+your device. The output of this command will return something like the following
+<a class="reference download internal" href="_downloads/udevadm_info_example.txt"><tt class="xref download docutils literal"><span class="pre">udevadm_info_example</span></tt></a>. Look for
+product and serial attributes for the Arduino Nano  - something line either this</p>
+<div class="highlight-none"><div class="highlight"><pre>ATTRS{manufacturer}==&quot;FTDI&quot;
+ATTRS{product}==&quot;FT232R USB UART&quot;
+ATTRS{serial}==&quot;11CP0195&quot;
+</pre></div>
+</div>
+<p>of this</p>
+<div class="highlight-none"><div class="highlight"><pre>ATTRS{manufacturer}==&quot;FTDI&quot;
+ATTRS{product}==&quot;ARDUINO NANO&quot;
+ATTRS{serial}==&quot;11CP0195&quot;
+</pre></div>
+</div>
+<p>Next ...</p>
 </div>
 </div>
 </div>
