@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4. Appendix &mdash; MCT 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="MCT 0.1 documentation" href="index.html" />
+    <link rel="prev" title="3. Random Synchronization Signal" href="rand_sync_hardware.html" /> 
+  </head>
+  <body>
+      <div class="header"><a href="http://www.iorodeo.com"  target="_blank">
+  <img class="rightlogo" src="_static/iorodeo_logo.png" alt="Logo"/>
+  </a><h1 class="heading"><a href="index.html">
+  <span>MCT 0.1 documentation</span></a></h1>
+<h2 class="heading"><span>4. Appendix</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="rand_sync_hardware.html">3. Random Synchronization Signal</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="appendix">
+<span id="id1"></span><h1>4. Appendix<a class="headerlink" href="#appendix" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="finding-attrs-product-and-attrs-serial-for-your-usb-serial-device">
+<span id="appendix-finding-usb-attrs"></span><h2>4.1. Finding ATTRS{product} and ATTRS{serial} for your USB/Serial device<a class="headerlink" href="#finding-attrs-product-and-attrs-serial-for-your-usb-serial-device" title="Permalink to this headline">¶</a></h2>
+<p>In this section we discuss how to determine the &#8220;product&#8221; and &#8220;serial&#8221;
+attributes for a USB/Serial device. We use an Arduino Nano as an examples.
+Depending on the version of the Arduino Nano used on your random
+synchronization device the product attribute will either be &#8220;ARDUINO NANO&#8221; or
+&#8220;FT232 USB UART&#8221;. The serial attribute will be specific to the exact Arduino
+Nano - it is basically a unique serial number identifying the  device.</p>
+<p>By default, when the Arduino Nanos plugged into the  computer via USB it will
+show up as a device in the &#8220;/dev&#8221; directory with a name of the form
+&#8220;/dev/ttyUSBn&#8221;  where &#8220;n&#8221; depends on the what other devices are connected to
+the computer. By running  the following command before and after connecting the
+USB cable to the Arduino Nano you can determine the name assigned to your
+device.</p>
+<div class="highlight-bash"><div class="highlight"><pre>ls /dev/ttyUSB*
+</pre></div>
+</div>
+<p>When the device is connected a new entry of the form &#8220;/dev/ttyUSBn&#8221; should
+appear  - this is temporary name automatically assigned to the device. You can
+use this name to determine the product and serial attributes for the devicej by
+running the following command.</p>
+<div class="highlight-bash"><div class="highlight"><pre>udevadm info -a -p <span class="k">$(</span>udevadm info -q path -n /dev/ttyUSBn<span class="k">)</span>
+</pre></div>
+</div>
+<p>Note, in the above command the &#8220;n&#8221; should be replace by the number assigned to
+your device. The output of this command will return something like the following
+<a class="reference download internal" href="_downloads/udevadm_info_example.txt"><tt class="xref download docutils literal"><span class="pre">udevadm_info_example</span></tt></a>. Look for
+product and serial attributes for the Arduino Nano  - something line either this</p>
+<div class="highlight-none"><div class="highlight"><pre>ATTRS{manufacturer}==&quot;FTDI&quot;
+ATTRS{product}==&quot;FT232R USB UART&quot;
+ATTRS{serial}==&quot;11CP0195&quot;
+</pre></div>
+</div>
+<p>or this</p>
+<div class="highlight-none"><div class="highlight"><pre>ATTRS{manufacturer}==&quot;FTDI&quot;
+ATTRS{product}==&quot;ARDUINO NANO&quot;
+ATTRS{serial}==&quot;11CP0195&quot;
+</pre></div>
+</div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="rand_sync_hardware.html">3. Random Synchronization Signal</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Will Dickson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

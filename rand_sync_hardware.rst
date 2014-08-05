@@ -3,10 +3,10 @@ Random Synchronization Signal
 *****************************
 
 The purpose of the random synchronization hardware is to provide a random 3-bit
-signal which be used to verify the synchronization between the camera tracking
-and Neuralynx data. If a misalignment is discovered the random synchronization
-signal can be used to help determine where the misalignment has occurred and to
-help re-align the data.  
+signal which can be used to verify the synchronization between the camera
+tracking and Neuralynx data. In addition if a misalignment is discovered the
+random synchronization signal can be used to help determine where the
+misalignment has occurred and to help re-align the data.  
 
 Hardware Description
 =====================
@@ -45,7 +45,7 @@ Additional information:
 Installation/Upgrade
 ====================
 
-Note, the initial MCT system did not include the random synchronization
+Note, the initial MCT system design did not include the random synchronization
 hardware. In order to make use of this this system the MCT software and
 configuration needs to be upgraded and the random synchronization hardware
 needs to be installed. 
@@ -62,11 +62,11 @@ Updating the MCT software and configuration files.
 Using the random synchronization devices requires upgrades to both the MCT
 software and the MCT configuration files.  
 
-The MCT software needs to be upgraded as new ROS package is required for
-communicating with the random synchronization hardware. In addition modified
-versions of serveral existing MCT ROS packages - such as mct_logging and
-mct_web_apps - are required in order to properly add the synchronization
-signals to the MCT tracking data.
+The MCT software needs to be upgraded as a new ROS package (mct_rand_sync)  is
+required for communicating with the random synchronization hardware. In
+addition modified versions of serveral existing MCT ROS packages - such as
+mct_logging and mct_web_apps - are required in order to properly add the
+synchronization signals to the MCT tracking data.
 
 The MCT configuration files need to be modified as an new rand_sync section
 (directory) has been added to the configuration in order to store the required
@@ -195,57 +195,100 @@ The last line of this file creates a symbolic link (rand-sync) for the random
 synchronization device. This symbolic link is required in order for the MCT
 software to find the random synchronization hardware. Two attributes (ATTRS)
 on this line may need to be modified in order to match your exact hardware -
-"product" and "serial".
+ATTRS{product} and ATTRS{serial}.  If you know don't know these values for your 
+device see the Appendix section on :ref:`appendix_finding_usb_attrs`.
 
-Depending on the version of the Arduino Nano used on your random
-synchronization device the product attribute will either be "ARDUINO NANO" or
-"FT232 USB UART". The serial attribute will be specific to the exact Arduino
-Nano - it is basically a unique serial number identifying the  device. 
+After changing the "product" and "serial" entries in the udev rules files
+99-mct-usb-serial.rules,  so that they math the values for your device, copy this file
+to the /etc/udev/rules.d folder with the folowing command (note I assume that you are
+in the same directory as the 99-mct-usb-serial.rules file)
 
-By default, when the Arduino Nano on the random synchronization device is
-plugged into the MCT master computer via USB it will show up as a device in the
-"/dev" directory with a name of the form "/dev/ttyUSBn"  where "n" depends on
-the what other devices are connected to the computer. By running  the following
-command before and after connecting the USB cable to the Arduino Nano you can
-determine the name assigned to your device. 
+.. code-block:: bash
 
+    sudo cp 99-mct-usb-serial.rules /etc/udev/rules.d/
 
-.. code-block:: bash 
+Send a signal to udevd to reload the rules file 
 
-    ls /dev/ttyUSB*
+.. code-block:: bash
 
-When the device is connected a new entry of the form "/dev/ttyUSBn" should
-appear  - this is temporary name automatically assigned to the device. You can
-use this name to determine the product and serial attributes for the devicej by
-running the following command.
+    sudo udevadm control --reload-rules
 
-.. code-block:: bash 
-
-    udevadm info -a -p $(udevadm info -q path -n /dev/ttyUSBn)
+The MCT software should know be able to find the random synchronization device
+when it is connected via the USB cable.
 
 
-Note, in the above command the "n" should be replace by the number assigned to
-your device. The output of this command will return something like the following
-:download:`udevadm_info_example <_static/udevadm_info_example.txt>`. Look for 
-product and serial attributes for the Arduino Nano  - something line either this
+Install the random synchronization hardware
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Installing the random synchronization hardware is very straight forward.
+
+#. Connect the Arduino Nano on the random sychronization device to the MCT master computer using a USB cable.
+#. Connect the camera trigger signal to the BNC connector on the random synchronization shield.
+#. Connect the 3 random synchronization and change signal to your data acquisition system (e.g. Neuralynx System)
+#. (Optional) If external power for the  device is desired. Connect a 7-12 power source to the 2.1mm DC jack on the  device shield.
+#. (Optional) Disable 'Reset on serial' for the Arduino Nano by placing a shunt on the two (male) header on the device shield.
 
 
-.. code-block:: none 
 
-    ATTRS{manufacturer}=="FTDI"
-    ATTRS{product}=="FT232R USB UART"
-    ATTRS{serial}=="11CP0195"
+Test the random synchronization hardware
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You should now be able to start the MCT system and determine if the random
+synchronization hardware is working. Note, in this section I assume that you have a working
+MCT configuration and are able to run the MCT 'tracking_2d' application.
+
+Start the MCT tracking application i.e., 
+
+.. code-block:: bash
+    
+    mct tracking_2d
+
+Wait for it to begin running. Next, examine the 'tracking_pts' topic for one of
+your tracking regions (e.g. maze or sleep_box). This can be done using the
+'rostopic echo' command. For example, to view the tracking_pts topic for a
+region called maze you would run the following command.
+
+.. code-block:: bash
+
+    rostopic echo  /maze/tracking_pts
+
+This should result in the tracking_pts topic being 'echoed' to the command window and you should see something like this
 
 
-of this
+.. code-block:: none
 
-.. code-block:: none 
+    ---
+    seq: 2392
+    secs: 1407211251
+    nsecs: 276319981
+    camera: ''
+    found: False
+    angle: 0.0
+    angle_deg: 0.0
+    midpt_anchor_plane: 
+    x: 0.0
+    y: 0.0
+    midpt_stitching_plane: 
+    x: 0.0
+    y: 0.0
+    pts_anchor_plane: []
+    pts_stitching_plane: []
+    bndry_anchor_plane: []
+    bndry_stitching_plane: []
+    sync_signal: [1, 0, 1]
+    ---
 
-    ATTRS{manufacturer}=="FTDI"
-    ATTRS{product}=="ARDUINO NANO"
-    ATTRS{serial}=="11CP0195"
+    ... etc
 
-Next ...
+
+streaming to the command window where each item in the tracking_pts topic is
+separated by '---'. Look for 'sync_signal' in the topic stream (as seem above).
+If the 'sync_signal' item is present and the three values follwing it (e.g. [1,
+0, 1]) are changing randomly - once per second - then the random
+synchronization hardware has been succefully installed. 
+
+When you are done viewing the tracking_pts topic you can close the 'rostopic
+echo' command using Ctl-C.
 
 
 USB Communications

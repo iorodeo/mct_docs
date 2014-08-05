@@ -13,6 +13,7 @@ Contents:
    preparing_computer
    command_line_usage
    rand_sync_hardware
+   appendix
 
 
 
